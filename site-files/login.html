@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+  <title>SOLUNA PUBLIC — Sign In</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <style>
+    /* ─── Reset ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --grid-size: 76px;
+      --row-width: 824px;
+      --orange: #f97316;
+      --orange-glow: rgba(249,115,22,0.35);
+      --orange-dim: rgba(249,115,22,0.12);
+      --border: rgba(255,255,255,0.09);
+      --radius-pill: 999px;
+      --radius-btn: 14px;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: #0a0a0c;
+      color: #f0f0f5;
+      font-family: "Albert Sans", sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { position: relative; }
+
+    /* ─── Grid background ─── */
+    #grid-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-color: #0a0a0c;
+      background-image:
+        linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size);
+      animation: gridDrift 60s linear infinite;
+    }
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: var(--grid-size) var(--grid-size); }
+    }
+
+    /* Orange glow blooms */
+    #grid-bg::before,
+    #grid-bg::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: bloomPulse 8s ease-in-out infinite alternate;
+    }
+    #grid-bg::before {
+      width: 600px; height: 600px;
+      top: -120px; right: -100px;
+      background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 68%);
+    }
+    #grid-bg::after {
+      width: 400px; height: 400px;
+      bottom: -80px; left: -80px;
+      background: radial-gradient(circle, rgba(249,115,22,0.05) 0%, transparent 68%);
+      animation-delay: -4s;
+    }
+    @keyframes bloomPulse {
+      from { opacity: 0.6; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.12); }
+    }
+
+    #topbar, .page, .wrap, #form-box { position: relative; z-index: 2; }
+
+    /* ─── Topbar ─── */
+    #topbar {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(var(--row-width), calc(100vw - 32px));
+      height: 60px;
+      padding: 0 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+        rgba(10,10,12,0.82);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 12px 40px rgba(0,0,0,0.32);
+      animation: topbarReveal 0.7s cubic-bezier(0.22,1,0.36,1) both;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    #topbar:hover {
+      border-color: rgba(249,115,22,0.2);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 12px 40px rgba(0,0,0,0.32),
+        0 0 30px rgba(249,115,22,0.06);
+    }
+    @keyframes topbarReveal {
+      from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex; align-items: center; gap: 16px; height: 100%;
+    }
+
+    /* Brand */
+    .brand {
+      font-family: "Albert Sans", sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.4px;
+    }
+    .brand-xyz { color: var(--orange); }
+
+    .version {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 22px;
+      padding: 0 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      letter-spacing: 0.04em;
+    }
+
+    .top-link {
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .top-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      height: 1px;
+      background: var(--orange);
+      transform: scaleX(0);
+      transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
+      transform-origin: left;
+    }
+    .top-link:hover { color: #fff; }
+    .top-link:hover::after { transform: scaleX(1); }
+
+    /* ─── Page center ─── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 108px 24px 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      animation: wrapReveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+    }
+    @keyframes wrapReveal {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Branding above form */
+    #login-title {
+      font-family: "Albert Sans", sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+    #login-title .xyz { color: var(--orange); }
+
+    #random-message {
+      font-family: "Albert Sans", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.2;
+      text-align: center;
+      min-height: 20px;
+      animation: msgFade 0.5s ease;
+    }
+    @keyframes msgFade {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Form card ─── */
+    #form-box {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 30px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%),
+        rgba(12,12,16,0.78);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.07),
+        inset 0 -1px 0 rgba(0,0,0,0.25),
+        0 24px 64px rgba(0,0,0,0.36),
+        0 0 0 1px rgba(249,115,22,0.04);
+      position: relative;
+    }
+
+    /* Orange accent line at top of form card */
+    #form-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249,115,22,0.5), transparent);
+      border-radius: 999px;
+    }
+
+    #form-box h2 {
+      font-family: "Albert Sans", sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+
+    /* Inputs */
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-btn);
+      color: #f0f0f5;
+      font-size: 14px;
+      font-family: "Albert Sans", sans-serif;
+      outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: rgba(249,115,22,0.45);
+      box-shadow:
+        0 0 0 3px rgba(249,115,22,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    input::placeholder { color: rgba(255,255,255,0.28); }
+
+    /* Error text */
+    #error {
+      min-height: 18px;
+      font-size: 12.5px;
+      color: #ff8080;
+      line-height: 1.4;
+    }
+
+    /* Submit button — liquid glass orange */
+    #submit-btn {
+      width: 100%;
+      height: 44px;
+      background:
+        linear-gradient(135deg, rgba(249,115,22,0.92), rgba(234,88,12,0.88));
+      border: 1px solid rgba(249,115,22,0.45);
+      border-radius: var(--radius-btn);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: "Albert Sans", sans-serif;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 6px 22px rgba(249,115,22,0.30);
+      transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+    }
+    #submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transition: left 0.55s ease;
+    }
+    #submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        0 8px 30px rgba(249,115,22,0.42);
+    }
+    #submit-btn:hover::before { left: 160%; }
+    #submit-btn:active { transform: translateY(0) scale(0.99); }
+    #submit-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 700px) {
+      #topbar {
+        width: calc(100vw - 20px);
+        top: 10px;
+        height: 56px;
+        padding: 0 14px;
+      }
+      .brand { font-size: 20px; }
+      .top-link { display: none; }
+      .page { padding-top: 100px; }
+      #login-title { font-size: 22px; }
+      #random-message { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="grid-bg"></div>
+
+  <div id="topbar">
+    <div class="topbar-left">
+      <span class="brand">SOLUNA<span class="brand-xyz"> PUBLIC</span></span>
+      <span class="version">v3.0.2</span>
+    </div>
+    <div class="topbar-right">
+      <span class="top-link">GitHub</span>
+      <span class="top-link">About Us</span>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="wrap">
+      <div id="login-title">SOLUNA<span class="xyz"> PUBLIC</span></div>
+      <div id="random-message"></div>
+
+      <div id="form-box">
+        <h2>Sign In</h2>
+        <input id="email" type="email" placeholder="Email" autocomplete="email"/>
+        <input id="pass" type="password" placeholder="Password" autocomplete="current-password"/>
+        <div id="error"></div>
+        <button id="submit-btn" type="button" onclick="doLogin()">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    try {
+      if (JSON.parse(localStorage.getItem('userData') || '{}').token) {
+        location.replace('./');
+      }
+    } catch {}
+
+    const API_HOSTS = [
+      'https://api.cloudmoon.cloudbatata.com',
+      'https://api.prod.cloudmoonapp.com',
+      'https://api.prod.geometry.today',
+      'https://hrz5zfjq02.execute-api.us-east-1.amazonaws.com',
+      'https://api.prod.viewoncloud.com'
+    ];
+
+    const ACCESS_KEY = "03dd53ec-20aa-4633-8957-093f8483938d";
+
+    const RANDOM_MESSAGES = [
+      "You are on Soluna Public. This version is buggy and will not be maintained."
+    ];
+
+    function setRandomMessage() {
+      const msg = RANDOM_MESSAGES[Math.floor(Math.random() * RANDOM_MESSAGES.length)];
+      const el = document.getElementById('random-message');
+      if (el) el.textContent = msg;
+    }
+
+    async function ping(host) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 3000);
+      try {
+        return (await fetch(host + '/_ping', { signal: ctrl.signal })).ok;
+      } catch {
+        return false;
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function getApiHost() {
+      return new Promise(resolve => {
+        let done = false, count = 0;
+        API_HOSTS.forEach(h => {
+          ping(h).then(ok => {
+            if (!done && ok) { done = true; resolve(h); }
+            else if (++count === API_HOSTS.length && !done) { resolve(null); }
+          });
+        });
+      });
+    }
+
+    function uuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : r & 3 | 8).toString(16);
+      });
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('pass').value;
+      const errEl = document.getElementById('error');
+      const btn   = document.getElementById('submit-btn');
+
+      if (!email || !pass) { errEl.textContent = 'Please fill in both fields.'; return; }
+
+      errEl.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      const host = await getApiHost();
+      if (!host) {
+        errEl.textContent = 'Could not reach server. Try again.';
+        btn.disabled = false; btn.textContent = 'Sign In';
+        return;
+      }
+
+      const did = localStorage.getItem('device_id') || uuid();
+      localStorage.setItem('device_id', did);
+
+      const url = new URL(host + '/login/pwd');
+      url.searchParams.set('device_type', 'web');
+      url.searchParams.set('query_uuid', uuid());
+      url.searchParams.set('site', 'cm');
+      url.searchParams.set('device_id', did);
+
+      try {
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-User-Language': 'en' },
+          body: JSON.stringify({ email, password: pass })
+        });
+
+        const r = await response.json();
+
+        if (r.code === 0) {
+          const key = prompt('Enter your login key.');
+          if (key !== ACCESS_KEY) {
+            errEl.textContent = 'Invalid key.';
+            btn.disabled = false; btn.textContent = 'Sign In';
+            return;
+          }
+          localStorage.setItem('userData', JSON.stringify({
+            userId: r.data.user_id,
+            token: r.data.token,
+            email
+          }));
+          const game = new URLSearchParams(location.search).get('game');
+          location.replace(game ? `./?game=${encodeURIComponent(game)}` : './');
+        } else {
+          errEl.textContent = r.message || 'Login failed.';
+          btn.disabled = false; btn.textContent = 'Sign In';
+        }
+      } catch (e) {
+        errEl.textContent = 'Error: ' + e.message;
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    setRandomMessage();
+  </script>
+</body>
+</html>
