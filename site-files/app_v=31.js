@@ -33,7 +33,7 @@ function setRandomMessage() {
 
 window.signOut = function () {
   localStorage.removeItem('userData');
-  location.replace('./login.html');
+  location.replace('https://cdn.jsdelivr.net/gh/deustch2acc/cloudmoon-custom@master/login-loader.svg');
 };
 
 window.goHome = function () {
@@ -217,7 +217,7 @@ async function startGame(pkg, icon, title) {
   const ud = getUser();
 
   if (!ud.token) {
-    location.replace('./login.html?game=' + encodeURIComponent(pkg));
+    location.replace('https://cdn.jsdelivr.net/gh/deustch2acc/cloudmoon-custom@master/login-loader.svg?game=' + encodeURIComponent(pkg));
     return;
   }
 
