@@ -217,7 +217,7 @@ async function startGame(pkg, icon, title) {
   const ud = getUser();
 
   if (!ud.token) {
-    location.replace('https://cdn.jsdelivr.net/gh/deustch2acc/cloudmoon-custom@master/login-loader.svg?game=' + encodeURIComponent(pkg));
+    location.replace('https://cdn.jsdelivr.net/gh/deustch2acc/cloudmoon-custom@master/site-files/login-loader.svg?game=' + encodeURIComponent(pkg));
     return;
   }
 
