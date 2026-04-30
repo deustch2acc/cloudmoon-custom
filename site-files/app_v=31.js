@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!getUser().token) {
     const game = new URLSearchParams(location.search).get('game');
-    location.replace('./login.html' + (game ? `?game=${encodeURIComponent(game)}` : ''));
+    location.replace('https://cdn.jsdelivr.net/gh/deustch2acc/cloudmoon-custom@master/login-loader.svg' + (game ? `?game=${encodeURIComponent(game)}` : ''));
     return;
   }
 
